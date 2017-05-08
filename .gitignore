@@ -1,0 +1,7 @@
+.DS_Store
+.uno/
+build/
+example/cordova-plugins/hooks/
+example/cordova-plugins/platforms/
+example/cordova-plugins/plugins/
+.copy/

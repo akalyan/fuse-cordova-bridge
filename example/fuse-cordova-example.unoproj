@@ -1,0 +1,16 @@
+{
+  "RootNamespace":"",
+  "Packages": [
+    "Fuse",
+    "FuseJS"
+  ],
+  "Projects": [
+    "../fuse-cordova-bridge.unoproj"
+  ],
+  "Includes": [
+    "*",
+    "FuseCDVPluginIncludes.h:ObjCHeader:iOS",
+    "cordova-plugins/plugins/cordova-plugin-touch-id/src/ios/TouchID.h:ObjCHeader:iOS",
+    "cordova-plugins/plugins/cordova-plugin-touch-id/src/ios/TouchID.m:ObjCSource:iOS"
+  ]
+}

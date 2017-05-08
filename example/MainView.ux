@@ -1,0 +1,220 @@
+<App>
+  <JavaScript>
+    var TouchID = require("CDVTouchID");
+    var Observable = require('FuseJS/Observable');
+
+    var isAvailableStatus$ = Observable('resting');
+    function isAvailable() {
+      isAvailableStatus$.value = 'loading';
+      TouchID.isAvailable(
+        function() {
+          debug_log('available!');
+          isAvailableStatus$.value = 'success';
+          setTimeout(function() { isAvailableStatus$.value = 'resting'; }, 2000);
+        },
+        function(msg) {
+          debug_log('not available, message: ' + msg);
+          isAvailableStatus$.value = 'error';
+          setTimeout(function() { isAvailableStatus$.value = 'resting'; }, 2000);
+        }
+      );
+    }
+
+    var didFingerprintDatabaseChangeStatus$ = Observable('resting');
+    function didFingerprintDatabaseChange() {
+      didFingerprintDatabaseChangeStatus$.value = 'loading';
+      TouchID.didFingerprintDatabaseChange(
+        function(changed) {
+          debug_log('Changed: ' + changed);
+          didFingerprintDatabaseChangeStatus$.value = 'success';
+          setTimeout(function() { didFingerprintDatabaseChangeStatus$.value = 'resting'; }, 2000);
+        },
+        function(msg) {
+          debug_log('could not check whether db changed: ' + msg);
+          didFingerprintDatabaseChangeStatus$.value = 'error';
+          setTimeout(function() { didFingerprintDatabaseChangeStatus$.value = 'resting'; }, 2000);
+        }
+      );
+    }
+
+    var verifyFingerprintStatus$ = Observable('resting');
+    function verifyFingerprint() {
+      verifyFingerprintStatus$.value = 'loading';
+      TouchID.verifyFingerprint(
+        'Scan your fingerprint please', // this will be shown in the native scanner popup
+        function() {
+          debug_log('verifyFingerprint successful');
+          verifyFingerprintStatus$.value = 'success';
+          setTimeout(function() { verifyFingerprintStatus$.value = 'resting'; }, 2000);
+        },
+        function(msg) {
+          debug_log('verifyFingerprint not ok: ' + JSON.stringify(msg));
+          verifyFingerprintStatus$.value = 'error';
+          setTimeout(function() { verifyFingerprintStatus$.value = 'resting'; }, 2000);
+        }
+      );
+    }
+
+    var verifyFingerprintWithCustomPasswordFallbackStatus$ = Observable('resting');
+    function verifyFingerprintWithCustomPasswordFallback() {
+      verifyFingerprintWithCustomPasswordFallbackStatus$.value = 'loading';
+      TouchID.verifyFingerprintWithCustomPasswordFallback(
+        'Scan your fingerprint please',
+        function() {
+          debug_log('verifyFingerprintWithCustomPasswordFallback successful');
+          verifyFingerprintWithCustomPasswordFallbackStatus$.value = 'success';
+          setTimeout(function() { verifyFingerprintWithCustomPasswordFallbackStatus$.value = 'resting'; }, 2000);
+        },
+        function(msg) {
+          debug_log('verifyFingerprintWithCustomPasswordFallback not ok: ' + JSON.stringify(msg));
+          verifyFingerprintWithCustomPasswordFallbackStatus$.value = 'error';
+          setTimeout(function() { verifyFingerprintWithCustomPasswordFallbackStatus$.value = 'resting'; }, 2000);
+        }
+      );
+    }
+
+    var verifyFingerprintWithCustomPasswordFallbackAndEnterPasswordLabelStatus$ = Observable('resting');
+    function verifyFingerprintWithCustomPasswordFallbackAndEnterPasswordLabel() {
+      verifyFingerprintWithCustomPasswordFallbackAndEnterPasswordLabelStatus$.value = 'loading';
+      TouchID.verifyFingerprintWithCustomPasswordFallbackAndEnterPasswordLabel(
+        'Scan your fingerprint please', // this will be shown in the native scanner popup
+        'Enter PIN', // this will become the 'Enter password' button label
+        function() {
+          debug_log('verifyFingerprintWithCustomPasswordFallbackAndEnterPasswordLabel successful');
+          verifyFingerprintWithCustomPasswordFallbackAndEnterPasswordLabelStatus$.value = 'success';
+          setTimeout(function() { verifyFingerprintWithCustomPasswordFallbackAndEnterPasswordLabelStatus$.value = 'resting'; }, 2000);
+        },
+        function(msg) {
+          debug_log('verifyFingerprintWithCustomPasswordFallbackAndEnterPasswordLabel not ok: ' + JSON.stringify(msg));
+          verifyFingerprintWithCustomPasswordFallbackAndEnterPasswordLabelStatus$.value = 'error';
+          setTimeout(function() { verifyFingerprintWithCustomPasswordFallbackAndEnterPasswordLabelStatus$.value = 'resting'; }, 2000);
+        }
+      )
+    }
+
+    module.exports = {
+
+      // functions
+      isAvailable: isAvailable,
+      didFingerprintDatabaseChange: didFingerprintDatabaseChange,
+      verifyFingerprint: verifyFingerprint,
+      verifyFingerprintWithCustomPasswordFallback: verifyFingerprintWithCustomPasswordFallback,
+      verifyFingerprintWithCustomPasswordFallbackAndEnterPasswordLabel: verifyFingerprintWithCustomPasswordFallbackAndEnterPasswordLabel,
+
+      // observables
+      isAvailableStatusObs: isAvailableStatus$,
+      didFingerprintDatabaseChangeStatusObs: didFingerprintDatabaseChangeStatus$,
+      verifyFingerprintStatusObs: verifyFingerprintStatus$,
+      verifyFingerprintWithCustomPasswordFallbackStatusObs: verifyFingerprintWithCustomPasswordFallbackStatus$,
+      verifyFingerprintWithCustomPasswordFallbackAndEnterPasswordLabelStatusObs: verifyFingerprintWithCustomPasswordFallbackAndEnterPasswordLabelStatus$
+
+    };
+  </JavaScript>
+  <DockPanel>
+    <StatusBarBackground Dock="Top" />
+    <BottomBarBackground Dock="Bottom" />
+
+    <Panel ux:Class="CheckIcon" ux:Name="self" Width="25" Height="25">
+      <Panel Offset="-10%,30%">
+          <Panel Width="100%" Height="100%">
+              <Rotation Degrees="45" />
+              <Rectangle ux:Name="checkRect1" Alignment="Left" TransformOrigin="Anchor" Anchor="0%,50%" Width="50%" Height="10%" Color="White"/>
+          </Panel>
+          <Rectangle ux:Name="checkRect2" Offset="-5%,0%" TransformOrigin="Anchor" Anchor="100%,50%" Width="100%" Height="10%" Color="White">
+              <Rotation Degrees="135"/>
+          </Rectangle>
+          <AddingAnimation>
+              <Change checkRect2.Width="0" Duration="0.5" Easing="BounceIn"/>
+              <Change checkRect1.Width="0" Duration="0.15" Delay="0.5" Easing="QuadraticOut"/>
+          </AddingAnimation>
+          <RemovingAnimation>
+              <Change self.Opacity="0" Duration="0.1"/>
+          </RemovingAnimation>
+      </Panel>
+    </Panel>
+
+    <Panel ux:Class="CrossIcon" Width="30" Height="30" ux:Name="self">
+      <Rectangle ux:Name="crossRect1" Width="100%" Height="10%" Color="White">
+          <Rotation Degrees="-45"/>
+      </Rectangle>
+      <Rectangle ux:Name="crossRect2" Width="100%" Height="10%" Color="White">
+          <Rotation Degrees="45"/>
+      </Rectangle>
+      <AddingAnimation>
+          <Change crossRect1.Width="15" Duration="0" DurationBack="0.5" Easing="BounceIn"/>
+          <Change crossRect2.Width="15" Duration="0" DurationBack="0.5" Easing="BounceIn"/>
+      </AddingAnimation>
+      <RemovingAnimation>
+          <Change self.Opacity="0" Duration="0.1"/>
+      </RemovingAnimation>
+    </Panel>
+
+    <Panel ux:Class="ButtonWithStatus" Height="60">
+      <string ux:Property="CurrentState" />
+      <string ux:Property="Text" />
+
+      <Text ux:Name="text" Alignment="Center" Value="{ReadProperty Text}" Color="#555" FontSize="16" Opacity="1"/>
+      <Panel Width="56">
+        <WhileTrue ux:Name="showCross">
+            <CrossIcon ux:Name="crossIcon" Opacity="0"/>
+            <Change crossIcon.Opacity="1" Duration="0.05"/>
+        </WhileTrue>
+      </Panel>
+      <Panel Width="56">
+        <WhileTrue ux:Name="showCheck">
+            <CheckIcon ux:Name="checkIcon" Opacity="0"/>
+            <Change checkIcon.Opacity="1" Duration="0.05"/>
+        </WhileTrue>
+      </Panel>
+
+      <Circle ux:Name="circle" StartAngleDegrees="-90" EndAngleDegrees="-90" Width="56" Height="56">
+        <Stroke Width="4" Alignment="Center">
+          <SolidColor ux:Name="circleStrokeColor" Color="#090"/>
+        </Stroke>
+      </Circle>
+
+      <Rectangle ux:Name="rect" CornerRadius="30" Width="300" Height="56">
+        <SolidColor ux:Name="rectColor" Color="#eee" />
+        <Stroke ux:Name="rectStroke" Width="4" Alignment="Center">
+          <SolidColor ux:Name="rectStrokeColor" Color="#555"/>
+        </Stroke>
+      </Rectangle>
+
+      <StateGroup Active="{ReadProperty CurrentState}" Rest="resting" Transition="Exclusive">
+        <State ux:Name="resting" />
+        <State ux:Name="loading">
+          <Change DurationBack="0" text.Opacity="0" Duration="0.15"/>
+          <Change DurationBack="0" rect.Width="56" Duration="0.4" Easing="CircularInOut"/>
+          <Change DurationBack="0" rectStrokeColor.Color="#ddd" Duration="0.3" />
+          <Change DurationBack="0" rectColor.Color="#fff" Duration=".3"/>
+          <Change DurationBack="0" circle.EndAngleDegrees="269.9" Delay="0.4" Duration="1" />
+        </State>
+        <State ux:Name="success">
+          <Change text.Opacity="0" DurationBack="0.2" DelayBack="0.3"/>
+          <Change rect.Width="56" Duration="0" DurationBack="0.4" Easing="CircularInOut"/>
+          <Change rectStrokeColor.Color="#090" Duration="0.3"/>
+          <Change rectColor.Color="#090" Duration=".3"/>
+          <Change showCheck.Value="true"/>
+        </State>
+        <State ux:Name="error">
+          <Change text.Opacity="0" DurationBack="0.2" DelayBack="0.3"/>
+          <Change rect.Width="56" Duration="0" DurationBack="0.4" Easing="CircularInOut"/>
+          <Change circleStrokeColor.Color="#900" Duration=".3"/>
+          <Change rectStrokeColor.Color="#900" Duration=".3"/>
+          <Change rectColor.Color="#900" Duration=".3"/>
+          <Change showCross.Value="true"/>
+        </State>
+      </StateGroup>
+    </Panel>
+
+    <StackPanel ItemSpacing="20" Padding="20">
+      <Text Alignment="Center" Value="TouchID Tester" Color="#999" FontSize="28" />
+      <ButtonWithStatus CurrentState="{isAvailableStatusObs}" Text="isAvailable" Clicked="{isAvailable}" />
+      <ButtonWithStatus CurrentState="{didFingerprintDatabaseChangeStatusObs}" Text="didFingerprintDatabaseChange" Clicked="{didFingerprintDatabaseChange}" />
+      <ButtonWithStatus CurrentState="{verifyFingerprintStatusObs}" Text="verifyFingerprint" Clicked="{verifyFingerprint}" />
+      <ButtonWithStatus CurrentState="{verifyFingerprintWithCustomPasswordFallbackStatusObs}" Text="...WithCustomPasswordFallback" Clicked="{verifyFingerprintWithCustomPasswordFallback}" />
+      <ButtonWithStatus CurrentState="{verifyFingerprintWithCustomPasswordFallbackAndEnterPasswordLabelStatusObs}" Text="...AndEnterPasswordLabel" Clicked="{verifyFingerprintWithCustomPasswordFallbackAndEnterPasswordLabel}" />
+    </StackPanel>
+
+  </DockPanel>
+</App>

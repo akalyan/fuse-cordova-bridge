@@ -1,0 +1,16 @@
+{
+  "Description": "fuse-cordova-bridge",
+  "Packages": [
+    "Fuse",
+    "FuseJS",
+    "Fuse.Controls",
+    "Fuse.Scripting"
+  ],
+  "Includes": [
+    "FuseCDVBridge.h:ObjCHeader:iOS",
+    "FuseCDVBridge.m:ObjCSource:iOS",
+    "FuseCDVPluginUtilities.h:ObjCHeader:iOS",
+    "FuseCDVPluginUtilities.m:ObjCSource:iOS",
+    "./*.uno"
+  ]
+}
